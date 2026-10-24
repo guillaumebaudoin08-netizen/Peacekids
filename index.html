@@ -59,7 +59,7 @@ input{font:inherit;padding:10px 12px;border-radius:16px;border:3px solid var(--i
 @keyframes wg{25%{transform:rotate(-14deg)}75%{transform:rotate(14deg)}}
 @keyframes si{from{transform:scale(0) rotate(-180deg)}}
 @keyframes fall{to{transform:translateY(110vh) rotate(400deg)}}
-.row{padding:18px 6px 10px}.tk{opacity:.7}textarea{font:inherit;font-size:13px;padding:10px;border-radius:16px;border:3px solid var(--ink);background:#fff;color:var(--ink);margin:4px 0;max-width:100%}.bd2{position:absolute;top:-22px;left:-4px;z-index:2}.pk{position:absolute;top:-18px;right:-4px;width:50px;height:50px;padding:0;font-size:24px;border-width:3px;z-index:2}.t3{width:29.3%;margin:2%;min-height:120px;padding:10px 4px}.sel{box-shadow:0 8px 0 var(--ink),0 0 0 8px #fff}
+.row{padding:18px 6px 10px}.tk{opacity:.7}.dy{border:3px solid var(--ink);border-radius:50%;width:34px;height:34px;padding:0;font:inherit;font-weight:700;font-size:14px;margin:4px 2px 0 0;background:#fff;color:#3b2f63;cursor:pointer}.dy.on{background:#5fe3b4}textarea{font:inherit;font-size:13px;padding:10px;border-radius:16px;border:3px solid var(--ink);background:#fff;color:var(--ink);margin:4px 0;max-width:100%}.bd2{position:absolute;top:-22px;left:-4px;z-index:2}.pk{position:absolute;top:-18px;right:-4px;width:50px;height:50px;padding:0;font-size:24px;border-width:3px;z-index:2}.t3{width:29.3%;margin:2%;min-height:120px;padding:10px 4px}.sel{box-shadow:0 8px 0 var(--ink),0 0 0 8px #fff}
 .bd{right:-4px;top:-16px}.wg{animation:wg .8s ease-in-out infinite}.si{animation:si .5s}
 @media (prefers-reduced-motion:reduce){.mo,.cl,.tw,.cf,.wg,.si,.tile.p{animation:none}}
 </style>
@@ -69,12 +69,14 @@ input{font:inherit;padding:10px 12px;border-radius:16px;border:3px solid var(--i
 <div id="app"></div>
 <script>
 var KEY="tableau-enfants-v2",AV=["🐻","🐰","🐱","🦊","🐼","🐸"],C=["#ffd93d","#ff8a7a","#5fe3b4","#b69cff","#6cc9ff","#ffb04d"];
-var S=null,V={s:"home"};
-var D={kids:[],n:10,pin:"0000",log:[],wants:[],
-tasks:[{id:1,t:"Passer l’aspirateur",i:"🧹",p:10},{id:2,t:"Remplir le lave-vaisselle",i:"🍽️",p:10},{id:3,t:"Ranger ma table",i:"🧸",p:5},{id:4,t:"Plier le linge",i:"👕",p:10},{id:5,t:"Faire mon lit",i:"🛏️",p:5},{id:6,t:"Me brosser les dents",i:"🦷",p:5}],
-rewards:[{id:1,t:"Un coloriage",i:"🎨",c:20},{id:2,t:"Un jeu éducatif",i:"🧩",c:30},{id:3,t:"Choisir le film",i:"🍿",c:50},{id:4,t:"Une sortie surprise",i:"🎡",c:100}]};
+var S=null,V={s:"home"},FL=0;
+var NEWR=[{t:"Une gommette",i:"🌟",c:10},{t:"Un bain à bulles",i:"🛁",c:25},{t:"Une histoire en plus",i:"📖",c:25},{t:"Un jeu en famille",i:"🎲",c:35},{t:"Une glace",i:"🍦",c:40},{t:"Construire une cabane",i:"🏕️",c:45},{t:"Choisir le repas",i:"🍝",c:60},{t:"Une sortie au parc",i:"🌳",c:80}];
+var D={kids:[],n:30,v:2,pin:"0000",log:[],wants:[],
+tasks:[{id:1,t:"Passer l’aspirateur",i:"🧹",p:10},{id:2,t:"Remplir le lave-vaisselle",i:"🍽️",p:10},{id:3,t:"Ranger ma table",i:"🧸",p:5},{id:4,t:"Plier le linge",i:"👕",p:10},{id:5,t:"Faire mon lit",i:"🛏️",p:5,e:1},{id:6,t:"Me brosser les dents",i:"🦷",p:5,e:1}],
+rewards:[{id:1,t:"Un coloriage",i:"🎨",c:20},{id:2,t:"Un jeu éducatif",i:"🧩",c:30},{id:3,t:"Choisir le film",i:"🍿",c:50},{id:4,t:"Une sortie surprise",i:"🎡",c:100}].concat(NEWR.map(function(r,i){return {id:5+i,t:r.t,i:r.i,c:r.c}}))};
 try{var r0=localStorage.getItem(KEY);if(r0)S=JSON.parse(r0);else{var o=JSON.parse(localStorage.getItem("tableau-princesses-v1")||"null");if(o){S=D;S.n=o.n||10;S.pin=o.pin||"0000";for(var q=0;q<o.kids.length;q++)S.kids.push({id:o.kids[q].id,n:o.kids[q].n,av:AV[q%AV.length],p:o.kids[q].p||0})}}}catch(e){}
 if(!S)S=D;
+if(!S.v){S.v=2;var ex={};S.rewards.forEach(function(r){ex[r.t]=1});NEWR.forEach(function(r){if(!ex[r.t])S.rewards.push({id:S.n++,t:r.t,i:r.i,c:r.c})});S.tasks.forEach(function(t){if(t.e===undefined&&(t.t==="Faire mon lit"||t.t==="Me brosser les dents"))t.e=1})}
 S.log=S.log.filter(function(l){return l.s!=="c"||l.d===today()});
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function esc(s){var m={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"};return String(s).replace(/[&<>"]/g,function(c){return m[c]})}
@@ -82,7 +84,10 @@ function today(){var d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-
 function by(L,f,id){for(var i=0;i<L.length;i++)if(L[i][f]===id)return L[i]}
 function rm(L,f,id){for(var i=0;i<L.length;i++)if(L[i][f]===id){L.splice(i,1);return}}
 function st(k,t){var d=today();for(var i=0;i<S.log.length;i++){var l=S.log[i];if(l.k===k&&l.t===t&&l.d===d)return l.s}return ""}
-function te(t){var d=today();for(var i=0;i<S.log.length;i++){var l=S.log[i];if(l.t===t&&l.d===d)return l}}
+function te(t,k){var tk=by(S.tasks,"id",t),d=today();for(var i=0;i<S.log.length;i++){var l=S.log[i];if(l.t===t&&l.d===d&&(!tk||!tk.e||l.k===k))return l}}
+function onDay(t){return !t.dw||t.dw.indexOf(new Date().getDay())>-1}
+function purge(){S.log=S.log.filter(function(l){return l.s!=="c"||l.d===today()})}
+function dayChips(t){var s="",n=["L","M","M","J","V","S","D"],g=[1,2,3,4,5,6,0];for(var i=0;i<7;i++){var on=!t.dw||t.dw.indexOf(g[i])>-1;s+="<button class='dy"+(on?" on":"")+"' data-a=dow data-id="+t.id+" data-w="+g[i]+">"+n[i]+"</button>"}return s}
 function val(id){return document.getElementById(id).value}
 function sureBtn(w,id){return V.sure===w+id?"<button class='btn grey sm' data-a=del data-w="+w+" data-id="+id+">Sûr ?</button>":"<button class='btn grey sm' data-a=sure data-w="+w+" data-id="+id+">🗑</button>"}
 var AN={"🐻":["#c98b5a","r"],"🐰":["#ffffff","b"],"🐱":["#ffb36b","t"],"🦊":["#ff7a3c","t"],"🐼":["#ffffff","p"],"🐸":["#7ed957","f"],"🐶":["#d9a066","d"],"🦁":["#ffc54d","r"],"🐵":["#b07a4a","r"]};
@@ -114,12 +119,12 @@ return h+"<button class='btn grey big' data-a=pin>🔒</button>"}
 
 function kidv(){
 var k=by(S.kids,"id",V.k);if(!k){V={s:"home"};return home()}
-var n=0,T=S.tasks.length,mc=99999,i,e,o;
-for(i=0;i<T;i++){e=te(S.tasks[i].id);if(e&&e.k===k.id&&e.s!=="c")n++}
+var L=S.tasks.filter(onDay),n=0,T=L.length,mc=99999,i,e,o;
+for(i=0;i<T;i++){e=te(L[i].id,k.id);if(e&&e.k===k.id&&e.s!=="c")n++}
 for(i=0;i<S.rewards.length;i++)if(S.rewards[i].c<mc)mc=S.rewards[i].c;
 var h="<div class=top><button class='btn rb' data-a=home>🏠</button><div class=mo>"+mo(n>0,110)+"</div><button class='btn rb mint"+(k.p>=mc?" wg":"")+"' data-a=shop>🎁</button></div><div class=pill>⭐ "+k.p+"</div><div class=row>";
-for(i=0;i<T;i++){var t=S.tasks[i],at="",bd="",ch="",cl="tile";
-e=te(t.id);o=e?(e.k===k.id?k:(by(S.kids,"id",e.k)||{av:"🐻"})):null;
+for(i=0;i<T;i++){var t=L[i],at="",bd="",ch="",cl="tile";
+e=te(t.id,k.id);o=e?(e.k===k.id?k:(by(S.kids,"id",e.k)||{av:"🐻"})):null;
 if(!e){at=" data-a=done data-id="+t.id;ch="<div class=chip>✋ Je prends !</div>"}
 else{bd="<div class=bd2>"+face(o.av,60)+"</div>";
 if(e.k!==k.id){cl+=" tk";ch="<div class=chip>🔒</div>"}
@@ -127,7 +132,7 @@ else if(e.s==="c"){at=" data-a=fin data-id="+t.id;ch="<div class=chip style='bac
 else if(e.s==="p"){cl+=" p";bd+="<div class='bd wg'>⏳</div>"}
 else bd+="<div class='bd si'>⭐</div>"}
 h+="<div class='"+cl+"' style='background:"+C[i%C.length]+"'"+at+"><div class=bub>"+esc(t.i)+"</div><div class=l>"+esc(t.t)+"</div>"+ch+bd+"</div>"}
-return h+"</div>"}
+return h+(T?"":"<h2>😴 Rien aujourd’hui !</h2>")+"</div>"}
 
 function pick(){
 var k=by(S.kids,"id",V.k),h="<div class=top><button class='btn rb' data-a=home>⬅️</button><div class=mo>"+mo(0,110)+"</div><span style='width:76px'></span></div><h1>Choisis !</h1><div class=row>";
@@ -140,17 +145,18 @@ function shop(){
 var k=by(S.kids,"id",V.k),h="<div class=top><button class='btn rb' data-a=back>⬅️</button><div class=mo>"+mo(0,110)+"</div><span style='width:76px'></span></div><div class=pill>⭐ "+k.p+"</div>";
 if(V.msg)h+="<h2>"+V.msg+"</h2>";
 h+="<div class=row>";
-for(var i=0;i<S.rewards.length;i++){var r=S.rewards[i],can=k.p>=r.c,sel=V.sure==="b"+r.id;
+var R=S.rewards.slice().sort(function(a,b){return a.c-b.c});for(var i=0;i<R.length;i++){var r=R[i],can=k.p>=r.c,sel=V.sure==="b"+r.id;
 h+="<div class='tile"+(can?"":" lk")+"' style='background:"+C[(i+2)%C.length]+"'"+(can?" data-a="+(sel?"buy":"sure data-w=b")+" data-id="+r.id:"")+"><div class=bub>"+esc(r.i)+"</div><div class=l>"+esc(r.t)+"</div><div class=chip"+(sel?" style='background:#5fe3b4'":"")+">"+(can?(sel?"✅ Oui !":"⭐ "+r.c):"🔒 ⭐ "+r.c)+"</div></div>"}
 return h+"</div>"}
 
+function forgot(){return "<div class=top><button class='btn rb' data-a=pin>⬅️</button><div class=mo>"+mo(0,110)+"</div><span style='width:76px'></span></div><h1>Code oublié</h1><p class=sub>"+(V.err?"Ce n’est pas la bonne réponse.":"Pour les adultes : combien font 17 × 23 ?")+"</p><div style='text-align:center'><input id=fg type=tel style='width:140px;font-size:26px;text-align:center'></div><button class='btn mint big' data-a=fgok>Valider</button>"}
 function pinv(){
 var d="",i;for(i=0;i<4;i++)d+=i<V.pin.length?"🔵":"⚪";
-var h="<h1>🔒</h1><p class=sub>"+(V.err?"Ce n’est pas le bon code.":"Code des parents")+"</p><div class=dots>"+d+"</div><div class=pad>";
+var h="<h1>🔒</h1><p class=sub>"+(V.err?"Ce n’est pas le bon code.":V.ok2?"Code remis à 0000":"Code des parents")+"</p><div class=dots>"+d+"</div><div class=pad>";
 var ks=[1,2,3,4,5,6,7,8,9,"⬅️",0,"⌫"];
 for(i=0;i<ks.length;i++){var a=ks[i]==="⬅️"?"home":ks[i]==="⌫"?"bk":"key";
 h+="<button class='btn "+(a==="key"?"lav":"grey")+"' data-a="+a+" data-id="+(typeof ks[i]==="number"?ks[i]:0)+">"+ks[i]+"</button>"}
-return h+"</div>"}
+return h+"</div>"+(FL>=3?"<button class='btn grey big' data-a=forgot style='font-size:18px'>Code oublié ?</button>":"")}
 
 function parent(){
 var i,h="<button class='btn lav sm' data-a=home style='margin:0'>← Quitter</button><h1>Espace parents</h1><h2>À valider</h2>",c=0;
@@ -164,8 +170,8 @@ for(i=0;i<S.wants.length;i++){var w=S.wants[i];
 h+="<div class=card><div class=ic>"+esc(w.ic)+"</div><div class=grow>"+esc(w.t)+"<div class=pts>"+w.av+" "+esc(w.kn)+" · "+w.c+" ⭐</div></div><button class='btn mint sm' data-a=given data-id="+w.i+">Remis</button></div>"}
 if(!S.wants.length)h+="<p class=pts>Aucune demande.</p>";
 h+="<h2>Tâches</h2>";
-for(i=0;i<S.tasks.length;i++){var t=S.tasks[i];h+="<div class=card><div class=ic>"+esc(t.i)+"</div><div class=grow>"+esc(t.t)+" <span class=pts>+"+t.p+" ⭐</span></div>"+sureBtn("dt",t.id)+"</div>"}
-h+="<input id=nt class=w1 placeholder='Nouvelle tâche'><input id=ni class=w2 value='⭐'><input id=np class=w2 type=number value=5><button class='btn sm' data-a=addt>Ajouter</button>";
+for(i=0;i<S.tasks.length;i++){var t=S.tasks[i];h+="<div class=card><div class=ic>"+esc(t.i)+"</div><div class=grow>"+esc(t.t)+" <span class=pts>+"+t.p+" ⭐</span><div>"+dayChips(t)+"</div><button class='btn sm' style='margin:4px 0 0' data-a=mode data-id="+t.id+">"+(t.e?"👥 Chacun la fait":"☝️ Un seul par jour")+"</button></div>"+sureBtn("dt",t.id)+"</div>"}
+h+="<input id=nt class=w1 placeholder='Nouvelle tâche'><input id=ni class=w2 value='⭐'><input id=np class=w2 type=number value=5><label style='color:#fff;text-shadow:0 2px 0 var(--ink)'><input id=nc type=checkbox style='width:22px;height:22px;vertical-align:middle'> chacun</label><button class='btn sm' data-a=addt>Ajouter</button>";
 h+="<h2>Récompenses</h2>";
 for(i=0;i<S.rewards.length;i++){var r=S.rewards[i];h+="<div class=card><div class=ic>"+esc(r.i)+"</div><div class=grow>"+esc(r.t)+" <span class=pts>"+r.c+" ⭐</span></div>"+sureBtn("dr",r.id)+"</div>"}
 h+="<input id=nr class=w1 placeholder='Nouvelle récompense'><input id=nri class=w2 value='🎁'><input id=nrc class=w2 type=number value=30><button class='btn sm' data-a=addr>Ajouter</button>";
@@ -179,7 +185,8 @@ h+="<h2>Code parents</h2><input id=npin type=tel maxlength=4 placeholder='4 chif
 return h}
 
 function render(){
-var v=V.s==="kid"?kidv():V.s==="shop"?shop():V.s==="pick"?pick():V.s==="pin"?pinv():V.s==="parent"?parent():home();
+purge();
+var v=V.s==="kid"?kidv():V.s==="shop"?shop():V.s==="pick"?pick():V.s==="forgot"?forgot():V.s==="pin"?pinv():V.s==="parent"?parent():home();
 document.getElementById("app").innerHTML=v}
 
 function act(a,id,w){
@@ -190,12 +197,12 @@ else if(a==="home")V={s:"home"};
 else if(a==="pin")V={s:"pin",pin:""};
 else if(a==="shop")V={s:"shop",k:V.k};
 else if(a==="back")V={s:"kid",k:V.k};
-else if(a==="done"){t=by(S.tasks,"id",id);if(t&&!te(id))S.log.push({i:S.n++,k:k.id,kn:k.n,av:k.av,t:id,tt:t.t,ic:t.i,p:t.p,d:today(),s:"c"})}
-else if(a==="fin"){l=te(id);if(l&&l.k===k.id&&l.s==="c")l.s="p"}
+else if(a==="done"){t=by(S.tasks,"id",id);if(t&&!te(id,k.id))S.log.push({i:S.n++,k:k.id,kn:k.n,av:k.av,t:id,tt:t.t,ic:t.i,p:t.p,d:today(),s:"c"})}
+else if(a==="fin"){l=te(id,k.id);if(l&&l.k===k.id&&l.s==="c")l.s="p"}
 else if(a==="pick")V={s:"pick",k:id};
 else if(a==="setav"){var u=false;for(var z=0;z<S.kids.length;z++)if(S.kids[z].av===w&&S.kids[z].id!==k.id)u=true;if(!u){k.av=w;V={s:"home"}}}
 else if(a==="rel")rm(S.log,"i",id);
-else if(a==="key"){V.pin+=id;V.err=0;if(V.pin.length===4){if(V.pin===S.pin)V={s:"parent"};else{V.pin="";V.err=1}}}
+else if(a==="key"){V.pin+=id;V.err=0;if(V.pin.length===4){if(V.pin===S.pin){V={s:"parent"};FL=0}else{V.pin="";V.err=1;FL++}}}
 else if(a==="bk")V.pin=V.pin.slice(0,-1);
 else if(a==="sure"){V.sure=w+id;V.msg=""}
 else if(a==="buy"){r=by(S.rewards,"id",id);if(r&&k.p>=r.c){k.p-=r.c;S.wants.push({i:S.n++,kn:k.n,av:k.av,t:r.t,ic:r.i,c:r.c});V.msg="🎉 C’est demandé !"}V.sure=""}
@@ -203,9 +210,13 @@ else if(a==="ok"){l=by(S.log,"i",id);if(l&&l.s==="p"){t=by(S.kids,"id",l.k);if(t
 else if(a==="no"){l=by(S.log,"i",id);if(l)l.s="c"}
 else if(a==="given")rm(S.wants,"i",id);
 else if(a==="del"){rm(w==="dt"?S.tasks:w==="dr"?S.rewards:S.kids,"id",id);V.sure=""}
-else if(a==="addt"){t=val("nt").trim();if(t)S.tasks.push({id:S.n++,t:t,i:val("ni")||"⭐",p:parseInt(val("np"),10)||5})}
+else if(a==="addt"){t=val("nt").trim();if(t)S.tasks.push({id:S.n++,t:t,i:val("ni")||"⭐",p:parseInt(val("np"),10)||5,e:document.getElementById("nc").checked?1:0})}
 else if(a==="addr"){t=val("nr").trim();if(t)S.rewards.push({id:S.n++,t:t,i:val("nri")||"🎁",c:parseInt(val("nrc"),10)||30})}
 else if(a==="addk"){t=val("nk").trim();if(t)S.kids.push({id:S.n++,n:t,av:nextAv(),p:0})}
+else if(a==="forgot")V={s:"forgot"};
+else if(a==="fgok"){if(val("fg").trim()==="391"){S.pin="0000";FL=0;V={s:"pin",pin:"",ok2:1}}else V.err=1}
+else if(a==="dow"){t=by(S.tasks,"id",id);if(t){if(!t.dw)t.dw=[0,1,2,3,4,5,6];var dv=parseInt(w,10),q2=t.dw.indexOf(dv);if(q2>-1)t.dw.splice(q2,1);else t.dw.push(dv)}}
+else if(a==="mode"){t=by(S.tasks,"id",id);if(t)t.e=t.e?0:1}
 else if(a==="sv"){V.bk=JSON.stringify(S);V.rs=0}
 else if(a==="ld"){V.rs=1;V.bk="";V.rv=""}
 else if(a==="cp"){var ta=document.getElementById("bkt"),oc=false;if(ta){ta.focus();ta.select();try{oc=document.execCommand("copy")}catch(e){}}V.ok=oc?"📋 Copié !":"Copie le texte à la main (appui long)."}
@@ -221,6 +232,7 @@ var el=e.target;
 while(el&&el!==this&&!el.getAttribute("data-a"))el=el.parentNode;
 if(!el||el===this)return;
 act(el.getAttribute("data-a"),parseInt(el.getAttribute("data-id"),10),el.getAttribute("data-w"))};
+var DAY=today();setInterval(function(){if(today()!==DAY){DAY=today();if(V.s==="home"||V.s==="kid"||V.s==="shop")render()}},60000);
 render();
 </script>
 <script>if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js")</script>
